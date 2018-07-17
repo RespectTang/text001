@@ -1,0 +1,115 @@
+/*
+1.N皇后 (15分) 
+题目内容：
+国际象棋中的皇后可以沿着水平线，垂直线，或者斜线前进，吃掉遇到的所有棋子，
+如果棋盘上有八个皇后，则这八个皇后如何相安无事的
+放置在棋盘上，1970年与1971年， E.W.Dijkstra与N.Wirth曾经用这个问题来讲解程式设计之技巧。
+该题要求N皇后的放置结果共有多少种
+输入描述
+输入一个正整数N（N小于16）
+输出描述
+输出结果
+输入样例
+8
+输出样例
+92
+
+文件参考：http://blog.csdn.net/Hackbuteer1/article/details/6657109 
+*/ 
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+
+long sum=0,upperlim=1;
+
+void test(long row,long ld,long rd)
+{
+	if(row!=upperlim)//row表示为表示对应行的列是放置，放置为1，没有放为0
+	{
+		long pos=upperlim & ~(row|ld|rd);
+		while(pos)//pos为0，皇后没有地方可以放，回溯
+		{
+			long p=pos&-pos;//取得可以放皇后的最右边的列，其余位置置0
+			pos-=p;//将最后边的列置为0，为下一次选可放位置的列做准备，其用途用于循环判断以及求出下一个位置的p
+			test(row+p,(ld+p)<<1,(rd+p)>>1);//row.ld.rd的新值记录用于排除下一行禁忌列 
+			 
+		 }	
+	 }
+	else
+	{
+		sum++;
+	 } 
+}
+
+int main(int argc,char* argv[])
+{
+	int n;
+	scanf("%d",&n);
+	upperlim=(upperlim<<n)-1;//移位减一，让可以放皇后的所有行存储列的位置并置为1
+	test(0,0,0);
+	printf("%d\n",sum); 
+	return 0;
+}
+/*************************8皇后问题C++代码实现*******************************/
+#include<iostream>
+using namespace std;
+static int gEightQueen[8] = { 0 }, gCount = 0;
+void print()//输出每一种情况下棋盘中皇后的摆放情况
+{
+    for (int i = 0; i < 8; i++)
+    {   
+        int inner;
+        for (inner = 0; inner < gEightQueen[i]; inner++)
+            cout << "0";
+            cout <<"#";
+        for (inner = gEightQueen[i] + 1; inner < 8; inner++)
+            cout << "0";
+        cout << endl;
+    }
+    cout << "==========================\n";
+}
+int check_pos_valid(int loop, int value)//检查是否存在有多个皇后在同一行/列/对角线的情况
+{
+    int index;
+    int data;
+    for (index = 0; index < loop; index++)
+    {
+        data = gEightQueen[index];
+        if (value == data)
+            return 0;
+        if ((index + data) == (loop + value))
+            return 0;
+        if ((index - data) == (loop - value))
+            return 0;
+    }
+    return 1;
+}
+void eight_queen(int index)
+{
+    int loop;
+    for (loop = 0; loop < 8; loop++)
+    {
+        if (check_pos_valid(index, loop))
+        {
+            gEightQueen[index] = loop;
+            if (7 == index)
+            {
+                gCount++, print();
+                gEightQueen[index] = 0;
+                return;
+            }
+            eight_queen(index + 1);
+            gEightQueen[index] = 0;
+        }
+    }
+}
+int main(int argc, char*argv[])
+{
+    eight_queen(0);
+    cout << "total=" << gCount << endl;
+    return 0;
+} 
+
+
+
+
