@@ -1,0 +1,242 @@
+/*
+算术表达式求值
+题目内容：
+ 输入一个由数字、+，-，*，/ 组成的算术表达式，求其值。
+输入描述
+一个表达式，其中每个运算数为正整数
+输出描述
+计算结果，保留2位小数
+输入样例
+1+12*3-4/2
+输出样例
+35.00
+
+博客来源：http://blog.csdn.net/zjdnwpu/article/details/51278096 
+*/
+#include <iostream>
+#include <stack>
+#include <math.h> 
+using namespace std;
+/*栈的基本操作*/ 
+/*使用两个栈，一个存储运算符，一个存储操作数*/ 
+stack<int> OPND;    //操作数栈 
+stack<char> OPTR;   //操作符栈 
+int priority[7][7] = {1,1,-1,-1,-1,1,1,1,1,-1,-1,-1,
+1,1,1,1,1,1,-1,1,1,1,1,1,1,-1,1,1,-1,-1,-1,-1,-1,0,
+-2,1,1,1,1,-2,1,1,-1,-1,-1,-1,-1,-2,0};    //存储运算符优先级关系
+
+/*要用到的函数们*/ 
+void Initial();    //初始化，将栈区置空 
+void GetExpressionValue();          //计算表达式的值
+int GetPriority(char a, char b);    //得到a,b优先级
+int Operate(int a, char theta, int b);    //计算a theta b的值
+
+int main()
+{
+    int sum = 0;
+    Initial();                   //初始化
+    GetExpressionValue();        //计算表达式的值
+    cout << OPND.top() << endl;//输出 
+    return 0;
+}
+
+void Initial()
+{
+    //初始化，清空两个栈，并将‘#’放入操作符栈中
+    while(!OPND.empty())//清空OPND栈 
+    {
+        OPND.pop();
+    }
+    
+    while(!OPTR.empty())//清空OPTR栈 
+    {
+        OPTR.pop();
+    }
+    
+    OPTR.push('#');//将#放入操作符栈中 
+}
+
+/*计算表达式的值*/
+void GetExpressionValue()
+{
+    int data[12] = {0};    //操作数
+    int d = 0;
+    char ch;
+    char theta;//运算符 
+    int a = 0;
+    int b = 0;
+    int i = 0;
+    int j = 0;
+    cin >> ch;
+    while(ch != '#' || OPTR.top() != '#')    //两个都=‘#’，求值结束
+    {
+        if(isdigit(ch))    //ch是操作数
+        {
+            i = 0;
+            d = 0;
+            while(isdigit(ch))      //将字符型的操作数转换为整型
+            {
+                data[i++] = ch - '0';
+                cin>>ch;
+            }
+            for(j = 0; j < i; j++)
+            {
+                d = d + data[j]*pow(10.0, j);
+            }
+            OPND.push(d);           //操作数入栈
+        }
+        else               //ch是操作符
+        {
+            switch(GetPriority(OPTR.top(), ch))
+            {
+            case -1:        //栈顶的操作符优先级小于当前操作符
+                {
+                    OPTR.push(ch);
+                    cin>>ch;
+                    break;
+                }
+            case 0:         //相等，消去括号
+                {
+                    OPTR.pop();
+                    cin>>ch;
+                    break;
+                }
+            case 1:         //栈顶的操作符优先级大于当前操作符
+                {
+                    theta = OPTR.top();
+                    OPTR.pop();
+                    a = OPND.top();
+                    OPND.pop();
+                    b = OPND.top();
+                    OPND.pop();
+                    OPND.push(Operate(b,theta,a));    //将操作后的结果放入运算数栈中
+                    break;
+                }
+            default:
+                break;
+            }
+        }
+    }
+}
+
+int GetPriority(char a, char b)
+{
+    int i = -1;
+    int j = -1;
+    switch(a)
+    {
+        case '#':
+            i++;
+        case ')':
+            i++;
+        case '(':
+            i++;
+        case '/':
+            i++;
+        case '*':
+            i++;
+        case '-':
+            i++;
+        case '+':
+            i++;
+        default:
+            break;
+    }
+
+    switch(b)
+    {
+        case '#':
+            j++;
+        case ')':
+            j++;
+        case '(':
+            j++;
+        case '/':
+            j++;
+        case '*':
+            j++;
+        case '-':
+            j++;
+        case '+':
+            j++;
+        default:
+            break;
+    }
+
+    if(i >= 0 && j >= 0)
+    {
+        return priority[i][j];
+    }
+    else
+    {
+        return -2;
+    }
+}
+
+
+
+int Operate(int a, char theta, int b)
+{
+    int res = 0;
+    switch (theta)
+    {
+    case '+':
+        res = a + b;
+        break;
+    case '-':
+        res = a - b;
+        break;
+    case '*':
+        res = a * b;
+        break;
+    case '/':
+        res = a / b;
+        break;
+    default:
+        break;
+    }
+    return res;
+}
+
+/*************简单算式表达式求值*****************************/
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+	double sum, a[100];
+	char b[100];
+	int i=0,j,k;
+	int n;
+	for(i=0;;i++)
+	{
+		scanf("%lf%c",&a[i],&b[i]);
+		if(b[i]!='+'&&b[i]!='/'&&b[i]!='*'&&b[i]!='-')
+		break;
+	}
+	b[i]=0;
+	n=strlen(b);
+	
+	for(i=0;b[i];)
+	if(b[i]=='*'||b[i]=='/')
+	{
+		if(b[i]=='*') a[i]*=a[i+1];
+		if(b[i]=='/') a[i]/=a[i+1];
+		for(j=i;b[j];j++)
+		{
+			b[j]=b[j+1];
+			a[j+1]=a[j+2];
+		}
+	}
+	else i++;
+	
+	for(i=0;b[i];i++)
+	if(b[i]=='+')
+	a[0]+=a[i+1];
+	else
+	a[0]-=a[i+1];
+	
+	printf("%.2lf",a[0]);
+	return 0;
+}
+
+
