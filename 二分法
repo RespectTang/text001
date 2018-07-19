@@ -164,5 +164,98 @@ int main()
 	return 0;
 }
 /**********************************************************************************************************/
+/*
+6.折半查找 (20分) 
+题目内容：
+折半查找是对有序表进行快速查找的一种方法，通过一次比较能减少一半的比较区域。
+输入描述
+在第一行输入数据元素个数n，第二行输入n个数据，在第三行输入待查数据
+输出描述
+查找成功输出"YES"，然后输出查找次数；若查找失败则输出"NO"，后输出查找次数。
+输入样例
+5
+1 3 5 6 8
+6
+输出样例 
+YES 2
+*/ 
+#include<stdio.h>
 
+ /*int fun(int m[],int n,int x)
+ {
+ 	int i=0,left,right,mid;
+ 	left=0;
+ 	right=n-1;
+ 	
+ 	while(left<=right)
+ 	{
+ 		mid=(left+right)/2;
+	 	i++;
+ 		if(x>m[mid])
+ 		{
+ 			left=mid+1;
+		}
+		else if(x<m[mid])
+		{
+			right=mid-1;
+		}
+		else if(x==m[mid])
+		{
+			printf("YES %d",i);
+			break; 
+		}
+	
+ 	}
+ 	while(left>right)
+	 {
+ 		printf("NO %d",i);
+ 		break;
+	 }
+ 	
+ }*/
+
+
+ int main()
+ {
+ 	int n,i,m[100],x,left,right,mid;
+ 	scanf("%d",&n);
+ 	for(i=0;i<n;i++)
+ 	{
+ 		scanf("%d",&m[i]);
+	}
+	scanf("%d",&x);
+ 
+ 
+  	i=0;
+ 	left=0;
+ 	right=n-1;
+ 	
+ 	while(left<=right)
+ 	{
+ 		mid=(left+right)/2;
+	 	i++;
+ 		if(x>m[mid])
+ 		{
+ 			left=mid+1;
+		}
+		else if(x<m[mid])
+		{
+			right=mid-1;
+		}
+		else if(x==m[mid])
+		{
+			printf("YES %d",i);
+			break; 
+		}
+	
+ 	}
+ 	while(left>right)
+	 {
+ 		printf("NO %d",i);
+ 		break;
+	 }
+ 	
+ 	
+ 	return 0;
+ }  
 /**********************************************************************************************************/
