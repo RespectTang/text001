@@ -286,5 +286,212 @@ int main()
 }
 
 /**********************************************************************************************************************/
+/*
+6.排列组合 (15分) 
+题目内容：
+对字符串（数字，字母，符号）进行全排列，并统计全排列的种树
+输入描述
+输入一个字符串
+输出描述
+输出字符串的全排列，每种情况占一行，最后一行输出全排列的个数
+输入样例
+123
+输出样例
+123
+132
+213
+231
+312
+321
+6
+*/
+
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<iostream>
+using namespace std;
+string str;
+string s[105];
+int sum=0;
+
+void swap(int a,int b)//定义交换函数 
+{
+	char temp;
+	temp=str[a];
+	str[a]=str[b];
+	str[b]=temp;
+}
+
+bool isswap(int k, int m)  
+{  
+    for(int i=k;i<m;i++)  
+    if(str[m]==str[i])  
+        return false;  
+    return true;  
+}
+
+void perm(int k,int m)//定义全排列函数
+{
+	if(k==m)
+	{
+		s[sum++]=str;
+	}
+	else
+	{
+		for(int i=k;i<=m;i++)
+		{
+			if(isswap(k,i))
+			{
+				swap(k,i);
+				perm(k+1,m);
+				swap(k,i);
+			}
+		}
+	}
+	
+ } 
+
+/*
+void perm(int k, int m)  
+{  
+    if(k==m)  
+    {   
+        s[sum++] = str;
+    }  
+    else  
+    {  
+        for(int i=k;i<=m;i++)  
+        {  
+            if(isswap(k,i))  
+            {  
+                swap(k,i);  
+                perm(k+1,m);  
+                swap(k,i);  
+            }     
+        }  
+    }  
+}  
+  
+*/
+int main()
+{
+	sum=0;
+	cin>>str;
+	int len=str.length();
+	perm(0,len-1);
+	sort(s,s+sum);
+	
+	for(int i=0;i<sum;i++)
+		cout<<s[i]<<endl;
+	printf("%d",sum);
+	
+	
+	
+	
+	
+	
+	
+	return 0;
+}
 
 /**********************************************************************************************************************/
+/*
+10.字符典 (15分) 
+题目内容：
+ 在数据压缩和数据加密过程中常需要对特殊的字符串进行编码. 给定的字母表A由26
+个小写英文字母组成A?={a,b,...z}. 该字母表产生的升序字符串指的是字符串中字母按
+照从左到右出现的次序与字母表中出现的次序相同，且每个字符最多出现1次. 例如，
+a,b,ab,xyz,ax等都是升序字符串. 现在对字母表A产生的所有长度不超过6的升序字符串
+按照字典序排列如下.
+1	2	3	…	26	27	28	…
+a	b	c	…	z	ab	ac	…
+对于给定长度不超过6的升序字符串，编程计算出它在上述字典中的编码.
+输入描述
+输入数据的第1行是一个正整数k,表示接下来共有k行.在接下来的k行中，每行给出一个
+字符串.
+输出描述
+输出结果，每行对应于一个字符串的编码.
+输入样例
+3
+a
+b
+abc
+输出样例
+1
+2
+352
+*/ 
+
+#include<stdio.h>
+#include<string.h>
+
+/*以第i个字符开头，长度为k的字符的升序字符个数*/
+int f(int i,int k)
+{
+	int sum=0;
+	if(k==1)
+	{
+		return 1;
+	}
+	for(int j=i+1;j<=26;j++)
+	{
+		sum+=f(j,k-1);
+	}
+	return sum; 
+}
+
+/*长度为k的字符串长度*/
+int g(int k)
+{
+	int sum=0;
+	for(int i=1;i<=26;i++)
+	{
+		sum+=f(i,k);
+	}
+	return sum;
+}
+
+int cal(char s[])
+{
+	int sum=0;
+	int k=strlen(s);
+	for(int i=1;i<k;i++)
+	{
+		sum+=g(i);
+	}
+	int h=s[0]-'a'+1;//第一个字母
+	for(int i=1;i<h;i++)
+	{
+		sum+=f(i,k);	
+	} 
+	for(int i=1,temp=h;i<k;i++)
+	{
+		int n=s[i]-'a'+1;
+		int len=k-i;//获取当前的长度
+		for(int j=temp+1;j<n;j++)
+		{
+			sum+=f(j,len);
+		 } 
+		 temp=n;
+	}
+	
+	return sum+1;
+}
+
+
+
+int main()
+{
+	int n;
+	char s[7];
+	scanf("%d",&n);
+	
+	for(int i=0;i<n;i++)
+	{
+		scanf("%s",s); 
+		printf("%d\n",cal(s));
+	}
+	
+	return 0;
+}
