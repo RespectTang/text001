@@ -259,3 +259,87 @@ YES 2
  	return 0;
  }  
 /**********************************************************************************************************/
+/*
+疯牛
+时间限制：1000 ms  |  内存限制：65535 KB 
+难度：4
+
+描述 
+农夫 John 建造了一座很长的畜栏，它包括N (2 <= N <= 100,000)个隔间，这些小隔间依次编号为x1,...,xN (0 <= xi <= 1,000,000,000).
+但是，John的C (2 <= C <= N)头牛们并不喜欢这种布局，而且几头牛放在一个隔间里，他们就要发生争斗。为了不让牛互相伤害。John决定自己给牛分配隔间，使任意两头牛之间的最小距离尽可能的大，那么，这个最大的最小距离是什么呢？ 
+
+输入
+有多组测试数据，以EOF结束。
+第一行：空格分隔的两个整数N和C
+第二行——第N+1行：分别指出了xi的位置
+输出
+每组测试数据输出一个整数，满足题意的最大的最小值，注意换行。
+样例输入
+5 3
+1
+2
+8
+4
+9
+样例输出
+3
+题意：简单的说就是给你一段长度，在这一段中给出m个点，然后在这m个点中选出k个点，让这k个点之间相邻两个点的之间距离的最小值最大
+思路：通过二分枚举这个最小值，然后通过贪心的思想找出满足要求的最大的这个最小值
+*/
+
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int n,c;
+int pos[10000];
+
+bool judge(int k)
+{
+	int cnt=1;
+	int st=pos[0];
+	for(int i=1;i<n;++i)
+	{
+		if(pos[i]-st>=k)
+		{
+			++cnt;
+			if(cnt>=c)
+			return true;
+			st=pos[i];
+		}
+	}
+	
+	return false;
+}
+
+int binary_search()
+{
+	int left=0;
+	int right=pos[n-1]-pos[0];//
+	int mid=(left+right)>>1;//
+	while(left<=right)
+	{
+		if(judge(mid))
+			left=mid+1;
+		else
+			right=mid-1;
+		mid=(left+right)>>1;
+	}
+	return left-1;
+	
+}
+
+int main()
+{
+	while(~scanf("%d%d",&n,&c))
+	{
+		for(int i=0;i<n;i++)
+			scanf("%d",pos[i]);
+		sort(pos,pos+n);
+		printf("%d\n",binary_search());
+	}
+	
+	return 0;
+}
