@@ -1,0 +1,290 @@
+/*
+6.刷礼品 (15分) 
+题目内容:
+一年一度的百度之星又开始了，这次参赛人数创下了吉尼斯世界纪录，于是百度之星决定奖励一部分人：
+所有资格赛提交ID以x结尾的参赛选手将得到精美礼品一份。小小度同学非常想得到这份礼品，
+于是他就连续提交了很多次，提交ID从a连续到b，他想问问你他能得到多少份礼品，你能帮帮他吗？
+输入描述
+第一行一个正整数T表示数据组数；
+接下去T行，每行三个正整数x，a，b (0<=x<=10^18， 1<=a，b <=10^18，a<= b)
+输出描述
+T行，每行为对应的数据情况下，小小度得到的礼品数
+输入样例
+1
+88888 88888 88888
+输出样例
+1
+*/
+
+//#include<iostream>
+#include<stdio.h>
+//using namespace std;
+
+long long bit(long long x)//计算位数 
+{
+	long long l = 10;
+	while(x>=10)
+	{
+		x/=10;
+		l*= 10;
+	}
+	return l;
+}
+
+long long suffix(long long k,long long x,long long num)//查找1~k区间以x为结尾的数字的个数
+{
+	long long m,n;
+	m=k/num;//计算起始数字，即为个数 
+	n=k%num;//计算末尾数字 
+	if(n>=x)
+		return m+1;
+	else
+		return m;
+}
+
+int main(void)
+{
+	long long a,b,x,num,left,right;
+	int t;
+	scanf("%d",&t);
+	while(t--)
+	{
+		scanf("%lld%lld%lld",&x,&a,&b);
+		num=bit(x);
+		left=suffix(a-1,x,num);
+		right=suffix(b,x,num);
+		printf("%lld",right-left);
+	}
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+7.用户品牌 (15分) 
+C时间限制：1?毫秒?|? C内存限制：3000?Kb
+题目内容：
+馅饼同学是一个在百度工作，做用户请求（query）分析的同学，他在用户请求中经常会遇到一些很奇葩的词汇。
+在比方说“johnsonjohnson”、“duckduck”，这些词汇虽然看起来是一些词汇的单纯重复，但是往往都是一些特殊品牌的词汇，
+不能被拆分开。为了侦测出这种词的存在，你今天需要完成我给出的这个任务——“找出用户请求中循环节最多的子串”。
+输入描述
+输入数据包括多组，每组为一个全部由小写字母组成的不含空格的用户请求（字符串），占一行。用户请求的长度不大于100,000。
+输出描述
+对于每组输入，输出这组用户请求中循环节最多的子串。如果一个用户请求中有两个循环节数相同的子串，请选择那个字典序最小的。
+输入样例
+duckduckgo
+输出样例
+duckduck
+
+先穷举长度L，然后求长度为L 的子串最多能连续出现几次。首先连续出现1 次是肯定可以的，所以这里只考虑至少2 次的情况。
+假设在原字符串中连续出现2 次，记这个子字符串为S，那么S 肯定包括了字符r[0]、 r[L]、 r[L*2]、r[L*3] ……中的某相邻的两个。
+所以只须看字符r[L*i]和r[L*(i+1)]往前和往后各能匹配到多远，记这个总长度为K，那么这里连续出现了K/L+1 次。最后看最大值是多少。
+*/
+
+#include<iostream>
+#include<cstdio>
+#include<string.h>
+#include<math.h>
+
+using namespace std;
+
+int wa[200000],wb[200000],wv[200000],wsum[200000];
+int height[200000],sa[200000],rank[200000];
+int n,ans,len,pos;
+char str[200000];
+int R[200000];
+int f[200000][20];
+int a[200000],num;
+
+int cmp(int *r,int a,int b,int l)
+{
+	return r[a]==r[b] && r[a+l]==r[b+l];
+}
+
+void da(int *r,int *sa,int n,int m)//倍增算法，r为待匹配数组，n为总长度，m为字符范围 
+{
+	int i,j,p,*x=wa,*y=wb,*t;
+	for(i=0;i<m;++i)
+		wsum[i]=0;
+	for(i=0;i<n;++i)
+		wsum[x[i]=r[i]]++;
+	for(i=1;i<m;++i)
+		wsum[i]+=wsum[i-1];
+	for(i=n-1;i>=0;--i)
+		sa[--wsum[x[i]]]=i;
+	for(j=1,p=1;p<n;j*=2,m=p)
+	{
+		for(p=0,i=n-j;i<n;++i)
+			y[p++]=i;
+		for(i=0;i<n;++i)
+			if(sa[i]>=j)
+				y[p++]=sa[i]-j;
+		for(i=0;i<n;i++)
+			wv[i]=x[y[i]];
+		for(i=0;i<m;++i)
+			wsum[i]=0;
+		for(i=0;i<n;++i)
+			wsum[wv[i]]++;
+		for(i=1;i<m;i++)
+			wsum[i]+=wsum[i-1];
+		for(i=n-1;i>=0;--i)
+			sa[--wsum[wv[i]]]=y[i]; 
+		for(t=x,x=y,y=t,p=1,x[sa[0]]=0,i=1;i<n;++i)
+		x[sa[i]]=cmp(y,sa[i-1],sa[i],j)?p-1:p++;
+	
+	}
+}
+
+void calheight(int *r,int *sa,int n)//求height数组
+{
+	int i,j,k=0;
+	for(i=0;i<=n;++i)
+		rank[sa[i]]=i;
+	for(i=0;i<n;height[rank[i++]]=k)
+		for(k?k--:0,j=sa[rank[i]-1];r[i+k]==r[j+k];k++);
+ } 
+
+int	mmin(int x,int y)
+{
+	return x<y?x:y;
+}
+
+void rmqinit(int n)//初始化rmq
+{
+	int i,j,k,m;
+	m=(int)(log(1.0*n)/log(2.0));
+	for(i=1;i<=n;i++)
+		f[i][0]=height[i];
+	for(i=1;i<=m;++i)
+		for(j=n;j>=1;--j)
+		{
+			f[j][i]=f[j][i-1];
+			k=1<<(i-1);
+			if(j+k<=n)
+				f[j][i]=mmin(f[j][i],f[j+k][i-1]);
+		}
+}
+
+int get_rmq(int x , int y)//询问x、y后缀的最长公共前缀
+{	
+	int m,t;
+	x=rank[x] , y=rank[y];
+	if(x>y)
+		t=x,x=y,y=t;
+	++x;
+	m=(int)(log(1.0*(y-x+1))/log(2.0));
+	return mmin(f[x][m],f[y-(1<<m)+1][m]);
+}
+
+int main(void)
+{
+	int i,j,k,ca=0,l,s,t,p,cnt;
+	char c;
+//	while(scanf("%s",str)!=EOF)
+//	{
+	scanf("%s",str);
+	//	if(str[0]=='#')
+	//		break;
+		n=strlen(str);
+		for(i=0;i<n;++i)
+			R[i]=str[i]-'a'+1;
+		R[n]=0;
+		da(R,sa,n+1,28);
+		calheight(R,sa,n);
+		rmqinit(n);
+		ans=1;
+		num=0;
+		pos=0;
+		for(l=1;l<=n/2;++l)		//枚举长度
+		{
+			for(i=0;i<n-l;i+=l)
+			{
+				if(str[i]!=str[i+l])
+					continue;
+				k=get_rmq(i,i+l);
+				s=k/l+1;
+				p=i;
+				t=l-k%l;
+				cnt=0;
+				for(j=i-1;j>=0 && j>i-l && str[j]==str[j+l];j--)
+				{
+					++cnt;
+					if(cnt==t)
+						s++,p=j;
+					else if(rank[j]<rank[p])
+						p=j;
+				}
+				if(ans<s)
+				{
+					pos=p;
+					len=s*l;
+					ans=s;
+
+				}
+				else if(ans==s&&rank[pos]>rank[p])
+				{
+					pos=p;
+					len=s*l;
+				}
+
+			}
+		}
+	/*	printf("Case %d: ",++ca);*/
+		if(ans<2)
+		{
+			c='z';
+			for(i=0;i<n;++i)
+				if(str[i]<c)
+					c=str[i];
+			printf("%c\n",c);
+			//continue;
+		}
+		for(i=0;i<len;++i)
+			printf("%c",str[i+pos]);
+		puts("");
+//	}
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+题目内容：
+编写一个程序，当输入英文字符串时，计算机将这个句子中的英文字母按字典字母顺序重新排列，排列后的单词的
+长度要与原始句子中的长度相同，并且要求只对Ａ到Ｚ的字母重新排列，其它字符保持原来的状态。
+输入描述
+一个字符串，包括大写英文字母，以及其他字符
+
+输出描述
+字符串的重新排列，只是大写字母按字典顺序，其他字母保持原位
+
+输入样例
+ＴＨＥ ＰＲＩＣＥ ＯＦＢＲＥＡＤ ＩＳ ￥１ ２５ ＰＥＲ ＰＯＵＮＤ
+
+输出样例
+ＡＢＣ ＤＤＥＥＥ ＥＦＨＩＩＮＯ ＯＰ ￥１ ２５ ＰＰＲ ＲＲＳＴＵ
+*/
+//编程思路：选取合适条件的字符进行顺序 
+#include<stdio.h>
+#include<string.h>
+int main()
+{
+	int i,j,len;
+	char str[100],t;
+	gets(str);
+	len=strlen(str);
+	for(i=len-1;i>0;i--)//趟数 
+		for(j=0;j<i;j++)//每次比较的字符
+		if(str[j]>='A'&&str[j]<='Z'&&str[i]>='A'&&str[i]<='Z')
+		if(str[i]<str[j])//交换
+		{
+			t=str[i];
+			str[i]=str[j];
+			str[j]=t; 
+		}
+		
+		puts(str);
+		
+	return 0;
+	
+}
+
+/**********************************************************************************************************************/
+
+/**********************************************************************************************************************/
