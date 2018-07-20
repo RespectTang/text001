@@ -495,3 +495,1318 @@ int main()
 	
 	return 0;
 }
+/**********************************************************************************************************************/
+/*
+1002. 写出这个数 (20)
+时间限制 
+400 ms
+内存限制 
+65536 kB
+代码长度限制 
+8000 B
+判题程序 
+Standard 
+作者 
+CHEN, Yue
+读入一个自然数n，计算其各位数字之和，用汉语拼音写出和的每一位数字。 
+输入格式：每个测试输入包含1个测试用例，即给出自然数n的值。这里保证n小于10100。
+输出格式：在一行内输出n的各位数字之和的每一位，拼音数字间有1 空格，但一行中最后一个拼音数字后没有空格。 
+输入样例：
+1234567890987654321123456789
+输出样例：
+yi san wu
+*/
+#include<stdio.h>
+char s[100];
+int a[100];
+int i,j,k;
+int sum=0;
+int main()
+{
+	gets(s);
+	for(i=0;s[i]!='\0';i++)
+	{
+		sum+=s[i]-'0';
+	}
+//	printf("%d\n",sum);
+	for(i=0;sum!=0;i++)
+	{
+		a[i]=sum%10;
+		sum/=10;
+//		printf("%d  ",a[i]);
+	}
+	for(j=i-1;j>-1;j--)
+	{
+		if(j==0)
+		{
+			switch(a[j])
+			{
+				case 0:printf("ling"); break;
+				case 1:printf("yi"); break;
+				case 2:printf("er"); break;
+				case 3:printf("san"); break;
+				case 4:printf("si"); break;
+				case 5:printf("wu");break;
+				case 6:printf("liu"); break;
+				case 7:printf("qi"); break;
+				case 8:printf("ba"); break;
+				case 9:printf("jiu"); break;
+			}
+		}
+		else
+		{
+			switch(a[j])
+			{
+				case 0:printf("ling "); break;
+				case 1:printf("yi "); break;
+				case 2:printf("er "); break;
+				case 3:printf("san "); break;
+				case 4:printf("si "); break;
+				case 5:printf("wu "); break;
+				case 6:printf("liu "); break;
+				case 7:printf("qi "); break;
+				case 8:printf("ba "); break;
+				case 9:printf("jiu "); break;
+			}
+		}
+		
+	 } 
+	
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1003. 我要通过！(20)
+时间限制 
+400 ms
+内存限制 
+65536 kB
+代码长度限制 
+8000 B
+判题程序 
+Standard 
+作者 
+CHEN, Yue
+“答案正确”是自动判题系统给出的最令人欢喜的回复。本题属于PAT的“答案正确”大派送 —— 
+只要读入的字符串满足下列条件，系统就输出“答案正确”，否则输出“答案错误”。
+得到“答案正确”的条件是：
+1. 字符串中必须仅有P, A, T这三种字符，不可以包含其它字符；
+2. 任意形如 xPATx 的字符串都可以获得“答案正确”，其中 x 或者是空字符串，或者是仅由字母 A 组成的字符串；
+3. 如果 aPbTc 是正确的，那么 aPbATca 也是正确的，其中 a, b, c 均或者是空字符串，或者是仅由字母 A 组成的字符串。
+现在就请你为PAT写一个自动裁判程序，判定哪些字符串是可以获得“答案正确”的。
+
+输入格式： 每个测试输入包含1个测试用例。第1行给出一个自然数n (<10)，是需要检测的字符串个数。接下来每个字符串占一行，
+字符串长度不超过100，且不包含空格。
+输出格式：每个字符串的检测结果占一行，如果该字符串可以获得“答案正确”，则输出YES，否则输出NO。
+输入样例：
+8
+PAT
+PAAT
+AAPATAA
+AAPAATAAAA
+xPATx
+PT
+Whatever
+APAAATAA
+输出样例：
+YES
+YES
+YES
+YES
+NO
+NO
+NO
+NO
+
+其实是把符合条件2的格式，变成aPbTc的形式，比如对于字符串"PAT"（a=null，b=A，c=null）它符合条件2的要求，那么就可以按照aPbATca的形式写，
+也就是"PAAT"，再接下去是"PAAAT"。另如"APATA"（a=A，b=A，c=A），接下去是"APAATAA"，再接下去是"APAAATAAA"。对于任何从这样扩展二来的字符串，
+b的初始值一定是A，而c的初始值与a相同，对于"aPbTc"的下一个其实是"aPAATaa"，再下一个是"aPAAATaaa"，再下一个是"aPAAAATaaaa"，
+规律就出来了。在P前面A的个数*P与T之间A的个数等于T后面A的个数，若符合即答案正确，反之错误。
+*/
+#include <stdio.h>
+#include <string.h>
+int main()
+{
+    char c[100];
+    int i,j,n;
+    int count_P,count_A,count_T,pos_P,pos_T;
+    scanf("%d\n",&n);
+    for(i=0;i<n;i++)
+    {
+        gets(c);
+        count_P = 0;
+        count_A = 0;
+        count_T = 0; 
+        pos_P = 0;
+        pos_T = 0;
+        for(j=0;j<strlen(c);j++)
+        {
+            if(c[j]=='P')
+            {
+          count_P++;
+                pos_P = j;
+            }
+            if(c[j]=='A')
+                count_A++;
+            if(c[j]=='T')
+            {
+                count_T++;
+                pos_T = j;
+            }
+        }//P之前的A乘以PT之间的A要等于T之后的A 
+        if(count_P+count_A+count_T != strlen(c) || pos_T-pos_P<=1 || count_P>1 || count_T>1 || pos_P*(pos_T-pos_P-1)!=strlen(c)-pos_T-1)
+            printf("NO\n");
+        else
+            printf("YES\n");
+    }
+} 
+/**********************************************************************************************************************/
+/*
+1006. 换个格式输出整数 (15)
+时间限制 
+400 ms
+内存限制 
+65536 kB
+代码长度限制 
+8000 B
+判题程序 
+Standard 
+作者 
+CHEN, Yue
+让我们用字母B来表示“百”、字母S表示“十”，用“12...n”来表示个位数字n（<10），换个格式来输出任一个不超过3位的正整数。
+例如234应该被输出为BBSSS1234，因为它有2个“百”、3个“十”、以及个位的4。
+输入格式：每个测试输入包含1个测试用例，给出正整数n（<1000）。
+输出格式：每个测试用例的输出占一行，用规定的格式输出n。
+输入样例1：
+234
+输出样例1：
+BBSSS1234
+输入样例2：
+23
+输出样例2：
+SS123
+*/
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int i = 0;
+    int b[3] = {0};
+    while (n) {
+        b[i++] = n % 10;
+        n = n / 10;
+    }
+    for (int j = 0; j < b[2]; ++j) {
+        cout << "B";
+    }
+    for (int k = 0; k < b[1]; ++k) {
+        cout << "S";
+    }
+    for (int l = 1; l <= b[0]; ++l) {
+        cout << l;
+    }
+
+    return 0;
+}
+/**********************************************************************************************************************/
+/*
+1009. 说反话 (20)
+时间限制 
+400 ms
+内存限制 
+65536 kB
+代码长度限制 
+8000 B
+判题程序 
+Standard 
+作者 
+CHEN, Yue
+给定一句英语，要求你编写程序，将句中所有单词的顺序颠倒输出。
+输入格式：测试输入包含一个测试用例，在一行内给出总长度不超过80的字符串。字符串由若干单词和若干空格组成，
+其中单词是由英文字母（大小写有区分）组成的字符串，单词之间用1个空格分开，输入保证句子末尾没有多余的空格。
+输出格式：每个测试用例的输出占一行，输出倒序后的句子。
+输入样例：
+Hello World Here I Come
+输出样例：
+Come I Here World Hello
+*/
+#include<iostream>
+using namespace std;
+
+char s[100][20],a[100];
+int i,j=0,k=0;
+
+int main()
+{
+	gets(a);
+	for(i=0;a[i]!='\0';i++)
+	{
+		if(a[i]!=' ')
+			s[j][k++]=a[i];
+		else
+		{
+			s[j][k]='\0';
+			j++;
+			k=0;
+		}
+	}
+	for(i=j;i>-1;i--)
+	{
+		if(i!=0)
+		cout<<s[i]<<' ';
+		else 
+		cout<<s[i];
+	}
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1014. 福尔摩斯的约会 (20)
+大侦探福尔摩斯接到一张奇怪的字条：“我们约会吧！ 3485djDkxh4hhGE 2984akDfkkkkggEdsb s&hgsfdk d&Hyscvnm”。
+大侦探很快就明白了，字条上奇怪的乱码实际上就是约会的时间“星期四 14:04”，因为前面两字符串中第1对相同的大
+写英文字母（大小写有区分）是第4个字母'D'，代表星期四；第2对相同的字符是'E'，那是第5个英文字母，代表一天里
+的第14个钟头（于是一天的0点到23点由数字0到9、以及大写字母A到N表示）；后面两字符串第1对相同的英文字母's'出
+现在第4个位置（从0开始计数）上，代表第4分钟。现给定两对字符串，请帮助福尔摩斯解码得到约会的时间。
+输入格式： 
+输入在4行中分别给出4个非空、不包含空格、且长度不超过60的字符串。 
+输出格式:
+在一行中输出约会的时间，格式为“DAY HH:MM”，其中“DAY”是某星期的3字符缩写，即MON表示星期一，TUE表示星期
+二，WED表示星期三，THU表示星期四，FRI表示星期五，SAT表示星期六，SUN表示星期日。题目输入保证每个测试存在唯
+一解。
+输入样例：
+3485djDkxh4hhGE 
+2984akDfkkkkggEdsb 
+s&hgsfdk 
+d&Hyscvnm
+输出样例：
+THU 14:04
+
+坑点：最后一个比较必须是小写字母 
+*/
+
+#include <iostream>  
+#include <string>  
+using namespace std;  
+  
+int main()  
+{  
+    string s1, s2, s3, s4;  
+    cin>>s1>>s2>>s3>>s4;  
+    int i, j, count = 0;  
+    for(i = 0; i < s1.length() && i < s2.length(); ++i)  
+    {  
+        if(s1[i] >= 'A' && s1[i] <= 'G' && s1[i] == s2[i] && count == 0)  
+        {  
+            switch(s1[i] - 'A')  
+            {  
+                case 0:cout<<"MON ";break;  
+                case 1:cout<<"TUE ";break;  
+                case 2:cout<<"WED ";break;  
+                case 3:cout<<"THU ";break;  
+                case 4:cout<<"FRI ";break;  
+                case 5:cout<<"SAT ";break;  
+                case 6:cout<<"SUN ";break;  
+            }  
+            count++;  
+        }  
+        else if((s1[i] >= '0' && s1[i] <= '9' && s1[i] == s2[i] && count == 1) ||  
+           (s1[i] >= 'A' && s1[i] <= 'N' && s1[i] == s2[i] && count == 1)   )  
+        {  
+            if(s1[i] >= '0' && s1[i] <= '9')  
+                cout<<"0"<<s1[i]-'0'<<":";  
+            else if(s1[i] >= 'A' && s1[i] <= 'N')  
+                cout<<s1[i]-'A'+10<<":";  
+            count++;  
+        }  
+    }  
+    for(i = 0; i < s3.length() && i < s4.length(); ++i)  
+    {  
+        if( (s3[i] >= 'a' && s3[i] <= 'z' && s3[i] == s4[i]) ||  
+            (s3[i] >= 'A' && s3[i] <= 'Z' && s3[i] == s4[i]) )  
+        {  
+            if(i < 9)  
+                cout<<"0"<<i<<endl;  
+            else  
+                cout<<i<<endl;  
+            break;  
+        }  
+    }  
+    return 0;  
+}  
+/**********************************************************************************************************************/
+/*
+1026. 程序运行时间(15)
+要获得一个C语言程序的运行时间，常用的方法是调用头文件time.h，其中提供了clock()函数，可以捕捉从程序开始
+运行到clock()被调用时所耗费的时间。这个时间单位是clock tick，即“时钟打点”。同时还有一个常数CLK_TCK，
+给出了机器时钟每秒所走的时钟打点数。于是为了获得一个函数f的运行时间，我们只要在调用f之前先调用clock()，
+获得一个时钟打点数C1；在f执行完成后再调用clock()，获得另一个时钟打点数C2；两次获得的时钟打点数之差(C2-C1)
+就是f运行所消耗的时钟打点数，再除以常数CLK_TCK，就得到了以秒为单位的运行时间。 
+这里不妨简单假设常数CLK_TCK为100。现给定被测函数前后两次获得的时钟打点数，请你给出被测函数运行的时间。
+输入格式： 
+输入在一行中顺序给出2个整数C1和C2。注意两次获得的时钟打点数肯定不相同，即C1 < C2，并且取值在[0, 107]。 
+输出格式： 
+在一行中输出被测函数运行的时间。运行时间必须按照“hh:mm:ss”（即2位的“时:分:秒”）格式输出；不足1秒的时间四舍五入到秒。 
+输入样例：
+123 4577973
+输出样例：
+12:42:59
+*/ 
+
+#include<iostream>
+#include<cstdio>
+using namespace std;
+
+int main()
+{
+	long long int a,b;
+	cin>>a>>b;
+	b=(0.5+(double)(b-a)/100);
+	long long int time;
+	time=b;
+	int hh=(int)time/3600;
+	time%=3600;
+	int mm=(int)time/60;
+	time%=60;
+	int ss=(int)time;
+	
+	printf("%02d:%02d:%02d",hh,mm,ss);
+	
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1028. 人口普查(20)
+某城镇进行人口普查，得到了全体居民的生日。现请你写个程序，找出镇上最年长和最年轻的人。 
+这里确保每个输入的日期都是合法的，但不一定是合理的——假设已知镇上没有超过200岁的老人，
+而今天是2014年9月6日，所以超过200岁的生日和未出生的生日都是不合理的，应该被过滤掉。 
+输入格式： 
+输入在第一行给出正整数N，取值在(0, 105]；随后N行，每行给出1个人的姓名（由不超过5个英文
+字母组成的字符串）、以及按“yyyy/mm/dd”（即年/月/日）格式给出的生日。题目保证最年长和最年轻的人没有并列。 
+输出格式： 
+在一行中顺序输出有效生日的个数、最年长人和最年轻人的姓名，其间以空格分隔。 
+输入样例：
+5
+John 2001/05/12
+Tom 1814/09/06
+Ann 2121/01/30
+James 1814/09/05
+Steve 1967/11/20
+输出样例：
+3 Tom John
+*/
+
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+struct people{
+	char name[20];
+	int yy;
+	int mm;
+	int dd;
+	long long int birth;
+};
+ 
+ int main()
+ {
+ 	people p[110];
+ 	people youngest,oldest;
+ 	int count=0;
+ 	int n;
+ 	int i,j,k;
+ 	cin>>n;
+ 	long long int min=18140906,max=20140906;
+ 	for(i=0;i<n;i++)
+ 	{
+ 		scanf("%s %d/%d/%d",p[i].name,&p[i].yy,&p[i].mm,&p[i].dd);
+ 		p[i].birth=p[i].yy*10000+p[i].mm*100+p[i].dd;
+ 		if(p[i].birth >= 18140906 && p[i].birth <= 20140906)
+ 		{
+ 			count++;
+ 			if(p[i].birth<max)
+ 			{
+ 				max=p[i].birth;
+ 				strcpy(oldest.name,p[i].name);
+			 }
+			if(p[i].birth>min)
+			{
+				min=p[i].birth;
+				strcpy(youngest.name,p[i].name);
+			}
+		 }
+	 }
+ 	if(count)
+ 	{
+ 		cout<<count<<' '<<oldest.name<<' '<<youngest.name<<endl;
+	 }
+ 	else
+ 		cout<<"0"<<endl;
+ 	return 0;
+ }
+/*可提交
+
+注意：最后一个为大数据测试，用cin和cout会超时，同时oldest和youngest应该用数组存储而不是结构体，会省时间 
+
+#include<stdio.h> 
+#include<string.h> 
+
+int main(){
+
+    int n;
+    int year,month,day;
+    int count = 0;  //有效年龄个数
+    char name[6], max_name[6], min_name[6];
+    long long maxAge = 20140907, minAge = 18140905; 
+
+    scanf("%d",&n);
+
+
+    for(int i = 0; i < n; i++){
+
+        scanf("%s %d/%d/%d",&name,&year,&month,&day);
+
+        //方便年龄比较 
+        long long birth = year*10000+month*100+day; 
+
+        //过滤不合理日期
+        if(birth < 18140906 || birth > 20140906);
+        else{ //得到最年长和最年轻的人
+            count++;
+            if(birth < maxAge){ //得到最年长 
+                strcpy(max_name,name);
+                maxAge = birth; 
+            }
+            if(birth > minAge){ //得到最年轻 
+                strcpy(min_name,name);
+                minAge = birth;
+            }       
+        } 
+    }
+    if(count)
+        printf("%d %s %s\n",count,max_name,min_name); 
+    else
+        printf("0\n");
+    return 0;
+}
+1
+*/ 
+/**********************************************************************************************************************/
+/*
+1029. 旧键盘(20)
+旧键盘上坏了几个键，于是在敲一段文字的时候，对应的字符就不会出现。现在给出应该输入的一段文字、以及实际被输入的文字，请你列出肯定坏掉的那些键。 
+输入格式： 
+输入在2行中分别给出应该输入的文字、以及实际被输入的文字。每段文字是不超过80个字符的串，由字母A-Z（包括大、小写）、
+数字0-9、以及下划线“_”（代表空格）组成。题目保证2个字符串均非空。 
+输出格式： 
+按照发现顺序，在一行中输出坏掉的键。其中英文字母只输出大写，每个坏键只输出一次。题目保证至少有1个坏键。
+输入样例：
+7_This_is_a_test
+_hs_s_a_es
+输出样例：
+7TI
+*/ 
+
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int main()
+{
+	char str1[85],str2[85];
+	char str[85]={-1};//若储存为0可能会引发歧义
+	gets(str1);
+	gets(str2);
+	int i,j,k=0;
+	bool find1=false,find2=false;
+	
+	for(i=0;i<strlen(str1);i++)
+	{
+		
+		for(j=0;j<strlen(str2);j++)
+		{
+			if(toupper(str1[i])==toupper(str2[j]))
+				find1=true;
+		}
+		
+		if(!find1)
+		{
+			for(int m=0;m<strlen(str);m++)
+			{
+				if(toupper(str1[i])==toupper(str[m]))
+					find2=true;
+			}
+			if(!find2)
+			{
+				str[k++]=toupper(str1[i]);
+			}
+		}
+		find1=false;
+		find2=false;	
+	 } 
+	 
+	for(i=0;i<k;i++)
+		cout<<str[i];
+	
+	return 0;
+}
+
+/*
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int main(){                         
+   char str1[85],str2[85];
+	char str[85]={-1};//若储存为0可能会引发歧义
+	gets(str1);
+	gets(str2);
+	int i,j,k=0;
+	bool find1=false,find2=false;
+    for(int i=0;i<strlen(str1);i++)
+    {
+	   for(int j=0;j<strlen(str2);j++)
+		{
+			if(toupper(str1[i])==toupper(str2[j]))
+				find1=true;
+		}
+        if(!find1)
+		{
+			for(int m=0;m<strlen(str);m++)
+			{
+				if(toupper(str1[i])==toupper(str[m]))
+					find2=true;
+			}
+			if(!find2)
+			{
+				str[k++]=toupper(str1[i]);
+			}
+		}
+        find1=false;
+        find2=false;
+    }
+    for(int i=0;i<k;i++){
+        cout<<str[i];
+    }   
+    return 0;
+}
+
+*/
+/**********************************************************************************************************************/
+/*
+1033. 旧键盘打字(20)
+旧键盘上坏了几个键，于是在敲一段文字的时候，对应的字符就不会出现。现在给出应该输入的一段文字、以及坏掉的那些键，打出的结果文字会是怎样？ 
+输入格式： 
+输入在2行中分别给出坏掉的那些键、以及应该输入的文字。其中对应英文字母的坏键以大写给出；每段文字是不超过105个字符的串。
+可用的字符包括字母[a-z, A-Z]、数字0-9、以及下划线“_”（代表空格）、“,”、“.”、“-”、“+”（代表上档键）。题目保证第2行输入的文字串非空。 
+注意：如果上档键坏掉了，那么大写的英文字母无法被打出。 
+输出格式： 
+在一行中输出能够被打出的结果文字。如果没有一个字符能被打出，则输出空行。
+输入样例：
+7+IE.
+7_This_is_a_test.
+输出样例：
+_hs_s_a_tst
+*/
+#include<stdio.h>  
+#include<string.h>  
+  
+int main()  
+{  
+    int i=0,flag=0,sign=0;  
+    char badkey[100]={0},ch=0;  
+    gets(badkey);  
+    
+    for(i=0;i < strlen(badkey);i++)  //判断是否需要删除所有大写 
+        if(badkey[i]=='+')  
+            flag=1;  
+    while((ch=getchar())!='\n')  
+    {  
+        sign=0;  
+        if(ch<='Z'&&ch>='A' && flag==1)  //删除大写，即不做考虑 
+            continue;  
+        for(i=0;i < strlen(badkey);i++)  
+            if(ch==badkey[i] || (ch<='z' && ch>='a' && ch+'A'-'a'==badkey[i]))  //删除相同项，和大写的小写项 
+            {  
+                sign=1;  
+                break;  
+            }  
+        if(sign==1)  
+            continue;  
+        printf("%c",ch);  
+    }  
+    return 0;  
+}  
+
+/**********************************************************************************************************************/
+/*
+1031. 查验身份证(15)
+一个合法的身份证号码由17位地区、日期编号和顺序编号加1位校验码组成。校验码的计算规则如下： 
+首先对前17位数字加权求和，权重分配为：{7，9，10，5，8，4，2，1，6，3，7，9，10，5，8，4，2}；
+然后将计算的和对11取模得到值Z；最后按照以下关系对应Z值与校验码M的值：
+Z：0 1 2 3 4 5 6 7 8 9 10
+M：1 0 X 9 8 7 6 5 4 3 2 
+现在给定一些身份证号码，请你验证校验码的有效性，并输出有问题的号码。
+输入格式： 
+输入第一行给出正整数N（<= 100）是输入的身份证号码的个数。随后N行，每行给出1个18位身份证号码。 
+输出格式： 
+按照输入的顺序每行输出1个有问题的身份证号码。这里并不检验前17位是否合理，只检查前17位是否全为
+数字且最后1位校验码计算准确。如果所有号码都正常，则输出“All passed”。 
+输入样例1：
+4
+320124198808240056
+12010X198901011234
+110108196711301866
+37070419881216001X
+输出样例1：
+12010X198901011234
+110108196711301866
+37070419881216001X
+输入样例2：
+2
+320124198808240056
+110108196711301862
+输出样例2：
+All passed
+*/ 
+
+#include<iostream>
+using namespace std;
+int weight[17] = {7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2};
+char z[11] = {'1','0','X','9','8','7','6','5','4','3','2'};
+
+int main()
+{
+	int n;
+	int i,j,k;
+	char id[18];
+	bool flag;
+	int cnt=0;
+	int sum=0;
+	cin>>n;
+	for(i=0;i<n;i++)
+	{
+		cin>>id;
+		flag=false;
+		sum=0;
+		for(j=0;j<17;j++)//判断前17个是否为数字 
+		{
+			if(id[j]>='0'&&id[j]<='9') 
+			{
+				sum+=(id[j]-'0')*weight[j];
+			}
+			else
+			{
+				flag=true;
+				break;
+			}
+		}
+		sum%=11;
+		if(z[sum]!=id[17] || flag==true)
+		{
+			cout<<id<<endl;
+			cnt++;
+		}
+	}
+		if(cnt==0)
+		{
+			cout<<"All passed";
+		}
+	
+	
+	
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1039. 到底买不买（20）
+小红想买些珠子做一串自己喜欢的珠串。卖珠子的摊主有很多串五颜六色的珠串，但是不肯把任何一串拆散了卖。于是小红要你帮忙判断一下，
+某串珠子里是否包含了全部自己想要的珠子？如果是，那么告诉她有多少多余的珠子；如果不是，那么告诉她缺了多少珠子。
+为方便起见，我们用[0-9]、[a-z]、[A-Z]范围内的字符来表示颜色。例如在图1中，第3串是小红想做的珠串；那么第1串可以买，因为包含了全
+部她想要的珠子，还多了8颗不需要的珠子；第2串不能买，因为没有黑色珠子，并且少了一颗红色的珠子。
+输入格式： 
+每个输入包含1个测试用例。每个测试用例分别在2行中先后给出摊主的珠串和小红想做的珠串，两串都不超过1000个珠子。 
+输出格式： 
+如果可以买，则在一行中输出“Yes”以及有多少多余的珠子；如果不可以买，则在一行中输出“No”以及缺了多少珠子。其间以1个空格分隔。 
+输入样例1：
+ppRYYGrrYBR2258
+YrR8RrY
+输出样例1：
+Yes 8
+输入样例2：
+ppRYYGrrYB225
+YrR8RrY
+输出样例2：
+No 2
+*/
+#include<iostream>
+#include<cstring>
+using namespace std;
+int main()
+{
+	char s1[1000];
+	char s2[1000];
+	int temp[1000];
+//	char ch;
+	int i,j,k;
+	gets(s1);
+	gets(s2);
+	for(i=0;i<strlen(s1);i++)
+	{
+		temp[s1[i]]++;				
+	}
+	int count1=0;
+	int count2=strlen(s1)-strlen(s2);
+	for(i=0;i<strlen(s2);i++)
+	{
+		temp[s2[i]]--;
+		if(temp[s2[i]]<0) count1++;
+	}
+	if(count1==0) cout<<"Yes "<<count2;
+	else cout<<"No "<<count1;	
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1040. 有几个PAT（25）
+字符串APPAPT中包含了两个单词“PAT”，其中第一个PAT是第2位(P),第4位(A),第6位(T)；第二个PAT是第3位(P),第4位(A),第6位(T)。
+现给定字符串，问一共可以形成多少个PAT？
+输入格式： 
+输入只有一行，包含一个字符串，长度不超过105，只包含P、A、T三种字母。 
+输出格式： 
+在一行中输出给定字符串中包含多少个PAT。由于结果可能比较大，只输出对1000000007取余数的结果。 
+输入样例：
+APPAPT
+输出样例：
+2
+*/ 
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+int main()
+{
+	int num_T=0,num_AT=0,num_PAT=0;
+	char str[1000010];
+	cin>>str; 
+	int i=strlen(str);
+	while(i--)
+	{
+		if(str[i]=='T') num_T++;
+		else if(str[i]=='A') num_AT+=num_T;
+		else if(str[i]=='P')
+		{
+			num_PAT+=num_AT;
+			if(num_PAT>1000000007) num_PAT%=1000000007;
+		}
+	}
+	cout<<num_PAT;
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1041. 考试座位号(15)
+每个PAT考生在参加考试时都会被分配两个座位号，一个是试机座位，一个是考试座位。正常情况下，考生在入场时先得到试机座位号码，
+入座进入试机状态后，系统会显示该考生的考试座位号码，考试时考生需要换到考试座位就座。但有些考生迟到了，试机已经结束，
+他们只能拿着领到的试机座位号码求助于你，从后台查出他们的考试座位号码。 
+输入格式： 
+输入第一行给出一个正整数N（<=1000），随后N行，每行给出一个考生的信息：“准考证号 试机座位号 考试座位号”。其中准考证号由14位数字组成，
+座位从1到N编号。输入保证每个人的准考证号都不同，并且任何时候都不会把两个人分配到同一个座位上。 
+考生信息之后，给出一个正整数M（<=N），随后一行中给出M个待查询的试机座位号码，以空格分隔。 
+输出格式： 
+对应每个需要查询的试机座位号码，在一行中输出对应考生的准考证号和考试座位号码，中间用1个空格分隔。 
+输入样例：
+4
+10120150912233 2 4
+10120150912119 4 1
+10120150912126 1 3
+10120150912002 3 2
+2
+3 4
+输出样例：
+10120150912002 2
+10120150912119 1
+*/ 
+#include<iostream>
+using namespace std;
+struct XX{
+		char id[100];
+		int sj;
+		int ks;
+};
+
+int main()
+{
+	int n,m;
+	int i,j,k;
+	XX aa[1001];
+	int bb[1001];
+	cin>>n;
+	for(i=0;i<n;i++)
+		cin>>aa[i].id>>aa[i].sj>>aa[i].ks;
+	cin>>m;
+	for(i=0;i<m;i++)
+		cin>>bb[i];
+		
+	for(i=0;i<m;i++)
+	{
+		for(j=0;j<n;j++)
+		{
+			if(bb[i]==aa[j].sj)
+				cout<<aa[j].id<<" "<<aa[j].ks<<endl;
+		}
+	}
+	
+	
+	
+	return 0;
+}
+/**********************************************************************************************************************/
+/*
+1042. 字符统计(20)
+请编写程序，找出一段给定文字中出现最频繁的那个英文字母。
+输入格式： 
+输入在一行中给出一个长度不超过1000的字符串。字符串由ASCII码表中任意可见字符及空格组成，至少包含1个英文字母，以回车结束（回车不算在内）。 
+输出格式： 
+在一行中输出出现频率最高的那个英文字母及其出现次数，其间以空格分隔。如果有并列，则输出按字母序最小的那个字母。统计时不区分大小写，输出小写字母。
+输入样例：
+This is a simple TEST.  There ARE numbers and other symbols 1&2&3...........
+输出样例：
+e 7
+*/ 
+#include<iostream>
+#include<cstring>
+#include<ctype.h>
+using namespace std;
+char str[1001];
+int temp[1001]={0};
+int main()
+{
+	gets(str);
+	int max=0;
+	int maxi=0;
+	for(int i=0;i<strlen(str);i++)
+	{
+		if(str[i]>='A'&&str[i]<='Z')
+		{
+			temp[(str[i]+32)-'a']++;
+		}
+		else if(str[i]>='a'&&str[i]<='z')
+		{
+			temp[str[i]-'a']++;
+		}
+	}
+	for(int i=0;i<1001;i++)
+	{
+		if(temp[i]>max)
+		{
+			max=temp[i];
+			maxi=i;
+		}
+		
+	}
+	printf("%c %d",maxi+'a',max);
+	
+}
+/**********************************************************************************************************************/
+/*
+1043. 输出PATest(20)
+
+给定一个长度不超过10000的、仅由英文字母构成的字符串。请将字符重新调整顺序，按“PATestPATest....”这样的顺序输出，并忽略其它字符。
+当然，六种字符的个数不一定是一样多的，若某种字符已经输出完，则余下的字符仍按PATest的顺序打印，直到所有字符都被输出。
+输入格式： 
+输入在一行中给出一个长度不超过10000的、仅由英文字母构成的非空字符串。 
+输出格式： 
+在一行中按题目要求输出排序后的字符串。题目保证输出非空。
+输入样例：
+redlesPayBestPATTopTeePHPereatitAPPT
+输出样例：
+PATestPATestPTetPTePePee
+*/
+
+#include<stdio.h> 
+int main()  
+{  
+    int i, j, max = 0, num[6] = {0};  
+    char ch;  
+    while(scanf("%c", &ch) && ('\n' != ch))  
+    {  
+        switch(ch)  
+        {  
+            case 'P': ++num[0]; break;  
+            case 'A': ++num[1]; break;  
+            case 'T': ++num[2]; break;  
+            case 'e': ++num[3]; break;  
+            case 's': ++num[4]; break;  
+            case 't': ++num[5]; break;  
+            default: break;  
+        }  
+    }  
+    for(i = 0; i < 6; ++i)  //限定可以写max个循环PATest 
+        if(max < num[i])  
+            max = num[i];  
+    for(i = 0; i < max; ++i)  
+        for(j = 0; j < 6; ++j)  
+            if(num[j])  
+            {  
+                --num[j];  
+                switch(j)  
+                {  
+                    case 0: printf("P"); break;  
+                    case 1: printf("A"); break;  
+                    case 2: printf("T"); break;  
+                    case 3: printf("e"); break;  
+                    case 4: printf("s"); break;  
+                    case 5: printf("t"); break;  
+                    default: break;  
+                }     
+            }  
+    printf("\n");  
+  
+    return 0;  
+}  
+/**********************************************************************************************************************/
+/*
+1044. 火星数字(20)
+火星人是以13进制计数的：
+地球人的0被火星人称为tret。 
+地球人数字1到12的火星文分别为：jan, feb, mar, apr, may, jun, jly, aug, sep, oct, nov, dec。 
+火星人将进位以后的12个高位数字分别称为：tam, hel, maa, huh, tou, kes, hei, elo, syy, lok, mer, jou。 
+例如地球人的数字“29”翻译成火星文就是“hel mar”；而火星文“elo nov”对应地球数字“115”。为了方便交流，请你编写程序实现地球和火星数字之间的互译。 
+输入格式： 
+输入第一行给出一个正整数N（<100），随后N行，每行给出一个[0, 169)区间内的数字 —— 或者是地球文，或者是火星文。 
+输出格式： 
+对应输入的每一行，在一行中输出翻译后的另一种语言的数字。
+输入样例：
+4
+29
+5
+elo nov
+tam
+输出样例：
+hel mar
+may
+115
+13
+*/
+
+#include<iostream>
+#include<cstdio>
+#include<string>
+using namespace std;
+int main()
+{
+    int N;
+    cin>>N;
+    string mess;
+    string three="";
+    string fire[13]={"tret", "jan", "feb", "mar", "apr", "may", "jun", "jly", "aug", "sep", "oct", "nov", "dec"};
+    string jinzhi[13]={"tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mer", "jou"};
+    int len,number=0;
+    getchar();          //使用getline时他会将第一次cin>>N的时候回车记录在内，从而少一次循环所以用getchar()捕捉那个回车
+    for(int i=0;i<N;i++)
+	{
+        getline(cin,mess);
+        if(mess[0]>='0'&&mess[0]<='9')
+		{//如果是数字，数字转火星文 
+            for(int j=0;j<mess.size();j++)
+                number=number*10+mess[j]-'0';
+            if(number<13)//直接输出对应数字
+                cout<<fire[number]<<endl;
+            else {//如果大于等于13并且可以被13整除，则根据样例是不用输出0（tret）的
+                if(number%13==0) cout<<jinzhi[number/13-1]<<endl;
+                else cout<<jinzhi[number/13-1]<<" "<<fire[number%13]<<endl;//否则的话要输出进位的火星文 
+            }
+        }
+        else
+		{//如果是火星文，火星文转数字 
+            for(int k=0;k<mess.size();k=k+4)
+			{
+                three=three+mess[k]+mess[k+1]+mess[k+2];//读取每个火星文
+                for(int l=0;l<13;l++)
+				{
+                    if(three==fire[l])//如果火星文在fire数组里，那么它是13进制中的个位数，只需加上坐标
+                    number=number+l;
+                    if(three==jinzhi[l])//如果在jinzhi数组中，则每次要乘以13
+                    number=number+(l+1)*13; 
+                }   
+                three="";
+            }
+            cout<<number<<endl;
+        }
+    number=0;
+    }
+    return 0;
+}
+/**********************************************************************************************************************/
+/*
+1048. 数字加密(20)
+本题要求实现一种数字加密方法。首先固定一个加密用正整数A，对任一正整数B，将其每1位数字与A的对应位置
+上的数字进行以下运算：对奇数位，对应位的数字相加后对13取余——这里用J代表10、Q代表11、K代表12；
+对偶数位，用B的数字减去A的数字，若结果为负数，则再加10。这里令个位为第1位。
+输入格式： 
+输入在一行中依次给出A和B，均为不超过100位的正整数，其间以空格分隔。 
+输出格式： 
+在一行中输出加密后的结果。 
+输入样例：
+1234567 368782971
+输出样例：
+3695Q8118
+*/
+
+#include<iostream>
+#include<cstring>
+using namespace std;
+int main(){
+    string A,tB;
+    cin>>A>>tB;
+    int len1=A.size();
+    int len2=tB.size();
+    int max=len1>len2?len1:len2;
+    char C[max];
+    string B="";
+    if(len1>len2){  //注意：如果A比B长，长多少则补几个0
+        for(int i=0;i<len1-len2;i++)
+            B+='0';
+    }
+    B+=tB;//补在左边
+    for(int i=B.size()-1,j=A.size()-1;i>=0&&j>=0;i--,j--){//从后面开始判断 
+        if((B.size()-i)%2==0){ //从右边起如果是偶数位
+            if(B[i]-A[j]<0){//B的数字减去A的数字也就是字符相减
+                    C[i]=(B[i]-A[j])+10+'0';//判断完是否小于0之后转换成字符
+            }else{
+                C[i]=B[i]-A[j]+'0';//大于0则直接转换成字符
+            }
+        }else{  //如果是奇数位
+            if((B[i]-'0'+A[j]-'0')%13==10)//先将对应位转换成数字再对13取余
+            C[i]='J';   
+            else if((B[i]-'0'+A[j]-'0')%13==11)
+            C[i]='Q';   
+            else if((B[i]-'0'+A[j]-'0')%13==12)
+            C[i]='K';
+            else {
+                C[i]=(B[i]-'0'+A[j]-'0')%13+'0';
+            }
+        }   
+    }
+    for(int i=0;i<len2-len1;i++)//若A>B,将不变的元素从前面赋值过来
+        C[i]=B[i];
+    for(int i=0;i<max;i++){
+        cout<<C[i];
+    }   
+    return 0;
+}
+/**********************************************************************************************************************/
+/*
+1052. 卖个萌 (20)
+时间限制 
+400 ms
+内存限制 
+65536 kB
+代码长度限制 
+8000 B
+判题程序 
+Standard 
+作者 
+CHEN, Yue
+萌萌哒表情符号通常由“手”、“眼”、“口”三个主要部分组成。简单起见，我们假设一个表情符号是按下列格式输出的：
+[左手]([左眼][口][右眼])[右手]
+现给出可选用的符号集合，请你按用户的要求输出表情。 
+输入格式： 
+输入首先在前三行顺序对应给出手、眼、口的可选符号集。每个符号括在一对方括号[]内。
+题目保证每个集合都至少有一个符号，并不超过10个符号；每个符号包含1到4个非空字符。 
+之后一行给出一个正整数K，为用户请求的个数。随后K行，每行给出一个用户的符号选择，
+顺序为左手、左眼、口、右眼、右手——这里只给出符号在相应集合中的序号（从1开始），数字间以空格分隔。 
+输出格式： 
+对每个用户请求，在一行中输出生成的表情。若用户选择的序号不存在，则输出“Are you kidding me? @\/@”。 
+输入样例：
+[╮][╭][o][~\][/~]  [<][>]
+ [╯][╰][^][-][=][>][<][@][⊙]
+[Д][▽][_][ε][^]  ...
+4
+1 1 2 2 2
+6 8 1 5 5
+3 3 4 3 3
+2 10 3 9 3
+输出样例：
+╮(╯▽╰)╭
+<(@Д=)/~
+o(^ε^)o
+Are you kidding me? @\/@
+*/ 
+#include<iostream>
+using namespace std;
+int get (string hand,string a[]){//用于把初始三个字符串转换成不含[]的三个string数组
+    int k=0;
+    for(int i=0;i<hand.size();i++){
+        if(hand[i]!='['&&hand[i]!=' '&&hand[i]!=']')
+            a[k]+=hand[i];
+        if(hand[i]==']')
+            k++;    
+    }
+    return k;
+}
+void paint(string a[],string b[],string c[],int len1,int len2,int len3,int select[]){//用于将萌萌哒表情画出来
+    bool yes=false;                     //是否该用户序号存在
+    
+    if(select[0]<=len1&&select[0]>0)    
+        yes=true;
+    else {                              //如果有一个不存在，则直接输出，并结束函数                  
+        yes=false;
+        cout<<"Are you kidding me? @\\/@"<<endl;
+        return;
+    }
+    
+    if(select[1]<=len2&&select[1]>0)
+            yes=true;
+    else {
+        yes=false;
+        cout<<"Are you kidding me? @\\/@"<<endl;
+        return;
+    }
+    
+    if(select[2]<=len3&&select[2]>0)
+            yes=true;
+    else {
+        yes=false;
+        cout<<"Are you kidding me? @\\/@"<<endl;
+        return;
+    }
+    
+    if(select[3]<=len2&&select[3]>0)
+            yes=true;
+    else {
+        yes=false;
+        cout<<"Are you kidding me? @\\/@"<<endl;
+        return;
+    }
+    
+    if(select[4]<=len1&&select[4]>0)
+            yes=true;
+    else {
+        yes=false;
+        cout<<"Are you kidding me? @\\/@"<<endl;
+        return;
+    }   
+    
+    if (yes){                           //如果用户序号都存在，则输出表情
+            cout<<a[select[0]-1]<<"(";
+            cout<<b[select[1]-1];
+            cout<<c[select[2]-1];
+            cout<<b[select[3]-1]<<")";
+            cout<<a[select[4]-1]<<endl;
+        }
+    
+}
+
+int main(){
+    string hand,eye,mouth;
+    string a[11],b[11],c[11];
+    int K,select[5];
+    getline(cin,hand);
+    getline(cin,eye);
+    getline(cin,mouth);
+    cin>>K;
+    int len1=get(hand,a);
+    int len2=get(eye,b);
+    int len3=get(mouth,c);
+
+    for(int i=0;i<K;i++){
+        for(int j=0;j<5;j++){
+            cin>>select[j];
+        }
+        paint(a,b,c,len1,len2,len3,select);//每五个数画一次表情
+    }
+    return 0;
+}
+/**********************************************************************************************************************/
+/*
+1055. 集体照 (25)
+拍集体照时队形很重要，这里对给定的N个人K排的队形设计排队规则如下： 
+每排人数为N/K（向下取整），多出来的人全部站在最后一排； 
+后排所有人的个子都不比前排任何人矮； 
+每排中最高者站中间（中间位置为m/2+1，其中m为该排人数，除法向下取整）； 
+每排其他人以中间人为轴，按身高非增序，先右后左交替入队站在中间人的两侧（例如5人身高为190、188、186、175、170，
+则队形为175、188、190、186、170。这里假设你面对拍照者，所以你的左边是中间人的右边）； 
+若多人身高相同，则按名字的字典序升序排列。这里保证无重名。 
+现给定一组拍照人，请编写程序输出他们的队形。
+输入格式： 
+每个输入包含1个测试用例。每个测试用例第1行给出两个正整数N（<=10000，总人数）和K（<=10，总排数）。随后N行，
+每行给出一个人的名字（不包含空格、长度不超过8个英文字母）和身高（[30, 300]区间内的整数）。 
+输出格式： 
+输出拍照的队形。即K排人名，其间以空格分隔，行末不得有多余空格。注意：假设你面对拍照者，后排的人输出在上方，前排输出在下方。 
+输入样例：
+10 3
+Tom 188
+Mike 170
+Eva 168
+Tim 160
+Joe 190
+Ann 168
+Bob 175
+Nick 186
+Amy 160
+John 159
+输出样例：
+Bob Tom Joe Nick
+Ann Mike Eva
+Tim Amy John
+*/
+#include<bits/stdc++.h>
+using namespace std; 
+struct Student{
+    char name[20];
+    int height;
+};
+bool Cmp(Student s1,Student s2){
+    if(s1.height!=s2.height){       //按照身高从小到大排列 
+        return s1.height<s2.height;
+    }
+    else return strcmp(s1.name,s2.name)>0;//如果身高相同则按照姓名的字典序进行排序 
+}   
+void output(Student s[],int begin,int end){//对每一排进行符合要求的排序进行输出 
+    Student temp[end-begin+2];//数组大小为end-begin+2 
+    int m=(end-begin)/2+1;  //m为中间值 
+    int count_left=0;       //左边到了第几个 
+    int count_right=0;      //右边到了第几个 
+    bool should_right=false;//是否应该到右边了 
+    for(int i=end;i>=begin;i--){
+        if(i==end)  temp[m]=s[i];//中间放置最大值 
+        else{
+            if(should_right){//分别一左一右进行放置 
+                count_right++;
+                temp[m+count_right]=s[i];
+                should_right=false; 
+            }
+            else{
+                count_left--;
+                temp[m+count_left]=s[i];
+                should_right=true;
+            }       
+        }   
+    }
+    for(int i=m+count_left;i<=m+count_right;i++){//输出一行 
+        if(i!=(m+count_left))   cout<<" ";
+        cout<<temp[i].name;
+    }   
+    cout<<endl;
+}
+int main(){
+    int N,K;
+    Student s[10005];
+    cin>>N>>K;
+    char name[20];
+    int height;
+    for(int i=1;i<=N;i++){  //输入
+        cin>>s[i].name>>s[i].height;
+    }
+    sort(s+1,s+N+1,Cmp);
+    int last=(K-1)*(N/K)+1;//先输出最后一排，last为最后一排开始的元素 
+    output(s,last,N);   //输出从last到N的元素 
+     for(int i=last-N/K;i>=1;i-=N/K)//逐行输出
+        output(s,i,i+N/K-1);
+    return 0;
+}
+/**********************************************************************************************************************/
